@@ -5,11 +5,11 @@ using UnityEngine;
 public class SpawnGate : MonoBehaviour
 {
     [SerializeField] private GameObject objectToSpawn;
-    private List<GameObject> GateList = new List<GameObject>();
     private Camera GameCamera;
-    private GameObject chipConnectedToMouse = null;
-    public bool placed = false;
+    private Transform chipConnectedToMouse = null;
     public bool pickedUp = false;
+    private bool justPickedUp;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,27 +19,22 @@ public class SpawnGate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // If you have a logic gate affixed to your mouse
-        if (Input.GetMouseButtonDown(0))
+        // If you click, release the logic gate
+        if (chipConnectedToMouse != null && Input.GetMouseButtonDown(0) && justPickedUp == false)
         {
-            holdSemiphore();
+            Debug.Log("Place logic gate");
+            chipConnectedToMouse = null;
+            pickedUp = false;
         }
+        
         
         if (chipConnectedToMouse != null && pickedUp == true)
         {
             // Move the gate sprite along with the mouse
             Vector3 convertedPosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
             convertedPosition.z = 0;  // Remove z component
-            chipConnectedToMouse.transform.position = convertedPosition;
-            
-
-        }
-
-        // If you click, release the logic gate
-        if (chipConnectedToMouse != null && pickedUp == false)
-        {
-            Debug.Log("Place logic gate");
-            chipConnectedToMouse = null;
+            chipConnectedToMouse.position = convertedPosition;
+            justPickedUp = false;
         }
     }
 
@@ -51,38 +46,20 @@ public class SpawnGate : MonoBehaviour
         Vector3 convertedMousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
         convertedMousePosition.z = 0; // Zeroing the z coordinate as the 2D game doesn't have a need for the z axis
         GameObject currentGate = Instantiate(objectToSpawn, convertedMousePosition, Quaternion.identity); //GameObject.CreatePrimitive(PrimitiveType.Cube); 
-        
-        // Add the new gate to a list of game objects
-        GateList.Add(currentGate);
-        chipConnectedToMouse = currentGate;
+        chipConnectedToMouse = currentGate.transform;
+        pickedUp = true;
     }
 
-    public void AttachGateToMouse(GameObject logicGate)
-    {
-        chipConnectedToMouse = logicGate;
-    }
-
-    public void setChipConnectedToMouse(string chip)
+    public void setChipConnectedToMouse(Transform chip)
     {
       
-        chipConnectedToMouse = GameObject.Find(chip);
-        
+        chipConnectedToMouse = chip;
+        justPickedUp = true;
+        pickedUp = true;
     }
 
-    public GameObject getChipConnectedToMouse()
+    public Transform getChipConnectedToMouse()
     {
         return chipConnectedToMouse;
-    }
-
-    private void holdSemiphore()
-    {
-        if (pickedUp == true)
-        {
-            pickedUp = false;
-        }
-        else
-        {
-            pickedUp = true;
-        }
     }
 }
