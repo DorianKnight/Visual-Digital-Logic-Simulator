@@ -22,7 +22,7 @@ public class SpawnGate : MonoBehaviour
         // If you click, release the logic gate
         if (chipConnectedToMouse != null && Input.GetMouseButtonDown(0) && justPickedUp == false)
         {
-            Debug.Log("Place logic gate");
+            //Debug.Log("Place logic gate");
             chipConnectedToMouse = null;
             pickedUp = false;
         }
@@ -40,7 +40,7 @@ public class SpawnGate : MonoBehaviour
 
     public void AddGate()
     {
-        Debug.Log("Create chip function has been pressed");
+        //Debug.Log("Create chip function has been pressed");
 
         // Create a game object at the same spot as the mouse
         Vector3 convertedMousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -48,6 +48,9 @@ public class SpawnGate : MonoBehaviour
         GameObject currentGate = Instantiate(objectToSpawn, convertedMousePosition, Quaternion.identity); //GameObject.CreatePrimitive(PrimitiveType.Cube); 
         chipConnectedToMouse = currentGate.transform;
         pickedUp = true;
+
+        // Generates the inputs and outputs
+        GetComponent<GateInternalLogic>().CreateIO(currentGate.transform);
     }
 
     public void setChipConnectedToMouse(Transform chip)
