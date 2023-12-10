@@ -5,46 +5,49 @@ using UnityEngine;
 public class ConnectingWires : MonoBehaviour
 {
     private Camera GameCamera;
-    private bool currentlyDrawing = false;
-    private bool justCreated = false;
+    public bool currentlyDrawing = false;
+    public int pointsCount;
 
     // Create the line render
-    GameObject LineContainer;
-    LineRenderer LineRenderComponent;
+    private LineRenderer wireDrawingComponent;
 
     // Start is called before the first frame update
-    void Start()
+    public void Awake()
     {
         GameCamera = Camera.main;
-        LineContainer = GameObject.Find("LineObject");
-        LineRenderComponent = LineContainer.GetComponent<LineRenderer>();
-        // LineRenderComponent.SetWidth(0.5f,0.5f);
+        wireDrawingComponent = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && justCreated == false)
-        {
-            currentlyDrawing = false;
-        }
-
-        if (currentlyDrawing)
+        if (currentlyDrawing == true)
         {
             Vector3 mousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
-            LineRenderComponent.SetPosition(1, mousePosition);
-            justCreated = false;
+            wireDrawingComponent.SetPosition(1, mousePosition);
         }
     }
 
-    private void OnMouseDown()
+    public void DrawLine(Vector3 ioNodePosition)
     {
-        Debug.Log("Pushed the input/output");
-        // Set the line render
-        Vector3 mousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
-        LineRenderComponent.SetPosition(0, gameObject.transform.position);
-        LineRenderComponent.SetPosition(1, mousePosition);
-        currentlyDrawing = true;
-        justCreated = true;
+        if (currentlyDrawing == false)
+        {
+            Debug.Log("Start drawing line");
+            currentlyDrawing = true;
+
+            Vector3 mousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 0; // Zeroing the z coordinate as the 2D game doesn't have a need for the z axis
+
+            // Set the line render
+            wireDrawingComponent.SetPosition(0, ioNodePosition);
+            wireDrawingComponent.SetPosition(1, mousePosition);
+        }
+
+        else
+        {
+            // Stop updating the line
+            currentlyDrawing = false;
+            wireDrawingComponent.SetPosition(1, ioNodePosition);
+        }
     }
 }
