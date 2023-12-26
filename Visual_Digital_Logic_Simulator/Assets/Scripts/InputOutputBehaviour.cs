@@ -8,12 +8,14 @@ public class InputOutputBehaviour : MonoBehaviour
     public GameObject renderConnectingWire;
     [SerializeField] public GameObject lineRenderer;
     public List<GameObject> linePoints = new List<GameObject>();
+    private bool connected;
 
     // Start is called before the first frame update
     void Start()
     {
         renderConnectingWire = null;
         LineParent = GameObject.Find("LineParent");
+        connected = false;
     }
 
     // Update is called once per frame
@@ -24,36 +26,46 @@ public class InputOutputBehaviour : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log("Clicked an object");
-        wire currentRenderer = LineParent.GetComponent<LineMemory>().getCurrentLineRenderer();
-        if (currentRenderer == null) 
+        if (connected == false)
         {
-            // Debug.Log("Instantiate new line");
-            // If a line has not been created, instantiate the line
-            renderConnectingWire = Instantiate(lineRenderer);
-            wire connectingWire = new wire(renderConnectingWire);
-            // Attach the current line rendering object to the persistent LineParent game object so this renderer can be referred to later
-            LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(connectingWire);
+            connected = true;
+            Debug.Log("Clicked an object");
+            wire currentRenderer = LineParent.GetComponent<LineMemory>().getCurrentLineRenderer();
+            if (currentRenderer == null)
+            {
+                // Debug.Log("Instantiate new line");
+                // If a line has not been created, instantiate the line
+                renderConnectingWire = Instantiate(lineRenderer);
+                wire connectingWire = new wire(renderConnectingWire);
+                // Attach the current line rendering object to the persistent LineParent game object so this renderer can be referred to later
+                LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(connectingWire);
 
-            connectingWire.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
+                connectingWire.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
 
-            // Add starting node to list so that the Line parent object can link the ioNode with the line render
-            connectingWire.setInputIo(this.gameObject);
+                // Add starting node to list so that the Line parent object can link the ioNode with the line render
+                connectingWire.setInputIo(this.gameObject);
+            }
+
+            else
+            {
+                // End point for line has been designated, finish drawing line
+                currentRenderer.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
+
+                // Add end node to list so that the line parent object can link the ioNode with the line render
+                currentRenderer.setOutputIo(this.gameObject);
+
+                // Adds the Line to memory such that upon subsequent updates, the line's position will update to the ioNode's position
+                LineParent.GetComponent<LineMemory>().addLineToMemory(currentRenderer);
+
+                // Remove this instance of linerenderer from the LineParent so you can create a new line
+                LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(null);
+            }
         }
 
         else
         {
-            // End point for line has been designated, finish drawing line
-            currentRenderer.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
-
-            // Add end node to list so that the line parent object can link the ioNode with the line render
-            currentRenderer.setOutputIo(this.gameObject);
-
-            // Adds the Line to memory such that upon subsequent updates, the line's position will update to the ioNode's position
-            LineParent.GetComponent<LineMemory>().addLineToMemory(currentRenderer);
-
-            // Remove this instance of linerenderer from the LineParent so you can create a new line
-            LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(null);
+            Debug.Log("I/O node already linked to a connecting wire");
         }
+        
     }
 }
