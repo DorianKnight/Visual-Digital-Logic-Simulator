@@ -17,7 +17,14 @@ public class LineMemory : MonoBehaviour
     void Update()
     {
         // Update the wire positions with the transforms of the io nodes
-        Debug.Log(wires.Count);
+        for (int i = 0; i < wires.Count; i++)
+        {
+            wire currentWire = wires[i];
+            LineRenderer currentLr = currentWire.lr.GetComponent<LineRenderer>();
+
+            currentLr.SetPosition(0, currentWire.getInputIo().transform.position);
+            currentLr.SetPosition(1, currentWire.getOutputIo().transform.position);
+        }
     }
 
     // Create function that updates all of the line renderers to conform to the position of the io nodes
