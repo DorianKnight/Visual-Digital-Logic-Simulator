@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine; 
 
 public class ConnectingWires : MonoBehaviour
 {
     private Camera GameCamera;
     public bool currentlyDrawing = false;
-    public int pointsCount;
+    //public List<GameObject> linePoints = new List<GameObject>();
 
     // Create the line render
     private LineRenderer wireDrawingComponent;
@@ -28,11 +28,12 @@ public class ConnectingWires : MonoBehaviour
         }
     }
 
-    public void DrawLine(Vector3 ioNodePosition)
+    public void DrawLine(GameObject ioNode)
     {
+        Vector3 ioNodePosition = ioNode.transform.position;
         if (currentlyDrawing == false)
         {
-            Debug.Log("Start drawing line");
+            // Debug.Log("Start drawing line");
             currentlyDrawing = true;
 
             Vector3 mousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -41,6 +42,9 @@ public class ConnectingWires : MonoBehaviour
             // Set the line render
             wireDrawingComponent.SetPosition(0, ioNodePosition);
             wireDrawingComponent.SetPosition(1, mousePosition);
+
+            // Add starting node to list so that the Line parent object can link the ioNode with the line render
+            //linePoints.Add(ioNode);
         }
 
         else
@@ -48,6 +52,11 @@ public class ConnectingWires : MonoBehaviour
             // Stop updating the line
             currentlyDrawing = false;
             wireDrawingComponent.SetPosition(1, ioNodePosition);
+
+            // Add end node to list so that the line parent object can link the ioNode with the line render
+            //linePoints.Add(ioNode);
         }
     }
+
+
 }
