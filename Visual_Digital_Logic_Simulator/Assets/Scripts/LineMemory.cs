@@ -7,10 +7,12 @@ public class LineMemory : MonoBehaviour
     public wire currentLineRenderer;
     private Camera GameCamera;
     private List<wire> wires = new List<wire>();
+    [SerializeField] public bool on_off;
     // Start is called before the first frame update
     void Start()
     {
         currentLineRenderer = null;
+        on_off = false;
     }
 
     // Update is called once per frame
@@ -24,6 +26,20 @@ public class LineMemory : MonoBehaviour
 
             currentLr.SetPosition(0, currentWire.getInputIo().transform.position);
             currentLr.SetPosition(1, currentWire.getOutputIo().transform.position);
+
+            if (currentWire.input.GetComponent<InputOutputBehaviour>().state == true)
+            {
+                currentWire.lr.GetComponent<LineRenderer>().startColor = Color.green;
+                currentWire.lr.GetComponent<LineRenderer>().endColor = Color.green;
+                currentWire.output.GetComponent<InputOutputBehaviour>().state = true;
+            }
+
+            else if (currentWire.input.GetComponent<InputOutputBehaviour>().state == false)
+            {
+                currentWire.lr.GetComponent<LineRenderer>().startColor = Color.red;
+                currentWire.lr.GetComponent<LineRenderer>().endColor = Color.red;
+                currentWire.output.GetComponent<InputOutputBehaviour>().state = false;
+            }
         }
     }
 
@@ -49,6 +65,7 @@ public class wire
     public GameObject lr { get; set; }
     public GameObject input { get; set; }
     public GameObject output { get; set; }
+    public bool state { get; set; }
 
     public wire (GameObject renderer)
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnGate : MonoBehaviour
+public class TrueConstSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject objectToSpawn;
     private Camera GameCamera;
@@ -26,8 +26,8 @@ public class SpawnGate : MonoBehaviour
             chipConnectedToMouse = null;
             pickedUp = false;
         }
-        
-        
+
+
         if (chipConnectedToMouse != null && pickedUp == true)
         {
             // Move the gate sprite along with the mouse
@@ -36,7 +36,7 @@ public class SpawnGate : MonoBehaviour
             chipConnectedToMouse.position = convertedPosition;
 
             // Set to false because the get mouse button down event will automatically release the chip when you pick it up
-            justPickedUp = false;  
+            justPickedUp = false;
         }
     }
 
@@ -52,7 +52,7 @@ public class SpawnGate : MonoBehaviour
         pickedUp = true;
 
         // Generates the inputs and outputs
-        currentGate.GetComponent<GateBehaviour>().CreateIO(currentGate.transform);
+        currentGate.GetComponent<TrueConst>().CreateIO(currentGate.transform);
     }
 
     public void setChipConnectedToMouse(Transform chip)
