@@ -42,7 +42,7 @@ public class SpawnGate : MonoBehaviour
 
     public void AddGate()
     {
-        Debug.Log("Create chip function has been pressed");
+        // Debug.Log("Create chip function has been pressed");
 
         // Create a game object at the same spot as the mouse
         Vector3 convertedMousePosition = GameCamera.ScreenToWorldPoint(Input.mousePosition);

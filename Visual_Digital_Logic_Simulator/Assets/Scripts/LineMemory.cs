@@ -24,21 +24,29 @@ public class LineMemory : MonoBehaviour
             wire currentWire = wires[i];
             LineRenderer currentLr = currentWire.lr.GetComponent<LineRenderer>();
 
-            currentLr.SetPosition(0, currentWire.getInputIo().transform.position);
-            currentLr.SetPosition(1, currentWire.getOutputIo().transform.position);
-
-            if (currentWire.input.GetComponent<InputOutputBehaviour>().state == true)
+            GameObject input = currentWire.getInputIo();
+            GameObject output = currentWire.getOutputIo();
+            
+            if (input != null && output != null)
             {
-                currentWire.lr.GetComponent<LineRenderer>().startColor = Color.green;
-                currentWire.lr.GetComponent<LineRenderer>().endColor = Color.green;
-                currentWire.output.GetComponent<InputOutputBehaviour>().state = true;
-            }
+                // Set wire position to moved chip
+                currentLr.SetPosition(0, currentWire.getInputIo().transform.position);
+                currentLr.SetPosition(1, currentWire.getOutputIo().transform.position);
 
-            else if (currentWire.input.GetComponent<InputOutputBehaviour>().state == false)
-            {
-                currentWire.lr.GetComponent<LineRenderer>().startColor = Color.red;
-                currentWire.lr.GetComponent<LineRenderer>().endColor = Color.red;
-                currentWire.output.GetComponent<InputOutputBehaviour>().state = false;
+                // Set wire colours
+                if (currentWire.input.GetComponent<InputOutputBehaviour>().state == true)
+                {
+                    currentWire.lr.GetComponent<LineRenderer>().startColor = Color.green;
+                    currentWire.lr.GetComponent<LineRenderer>().endColor = Color.green;
+                    currentWire.output.GetComponent<InputOutputBehaviour>().state = true;
+                }
+
+                else if (currentWire.input.GetComponent<InputOutputBehaviour>().state == false)
+                {
+                    currentWire.lr.GetComponent<LineRenderer>().startColor = Color.red;
+                    currentWire.lr.GetComponent<LineRenderer>().endColor = Color.red;
+                    currentWire.output.GetComponent<InputOutputBehaviour>().state = false;
+                }
             }
         }
     }

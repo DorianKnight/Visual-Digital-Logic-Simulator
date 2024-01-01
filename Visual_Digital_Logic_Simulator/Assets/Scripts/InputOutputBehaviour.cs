@@ -19,7 +19,7 @@ public class InputOutputBehaviour : MonoBehaviour
         renderConnectingWire = null;
         LineParent = GameObject.Find("LineParent");
         connected = false;
-        state = false;
+        //state = false;
         currentRenderer = null;
     }
 
@@ -33,11 +33,12 @@ public class InputOutputBehaviour : MonoBehaviour
     {
         if (connected == false)
         {
-            connected = true;
+            
             //Debug.Log("Clicked an object");
             currentRenderer = LineParent.GetComponent<LineMemory>().getCurrentLineRenderer();
             if (currentRenderer == null)
             {
+                connected = true;
                 // Debug.Log("Instantiate new line");
                 // If a line has not been created, instantiate the line
                 renderConnectingWire = Instantiate(lineRenderer);
@@ -48,28 +49,83 @@ public class InputOutputBehaviour : MonoBehaviour
                 currentRenderer.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
 
                 // Add starting node to list so that the Line parent object can link the ioNode with the line render
-                currentRenderer.setInputIo(this.gameObject);
+                if (input_or_output == false)
+                {
+                    // Input of chip but output of wire
+                    currentRenderer.setOutputIo(this.gameObject);
+                }
+                
+                else if (input_or_output == true)
+                {
+                    // Output of chip but input of wire
+                    currentRenderer.setInputIo(this.gameObject);
+                }
             }
 
-            else
+            else if ((input_or_output == false && currentRenderer.getOutputIo() == null) || (input_or_output == true && currentRenderer.getInputIo() == null))
             {
+                connected = true;
+                // Only end the line if 
+                // 1. You are an input and the wire does not already have an input
+                // 2. You are an output and the wire does not already have an output
+
                 // End point for line has been designated, finish drawing line
                 currentRenderer.lr.GetComponent<ConnectingWires>().DrawLine(this.gameObject);
 
                 // Add end node to list so that the line parent object can link the ioNode with the line render
-                currentRenderer.setOutputIo(this.gameObject);
-
+                if (input_or_output == false)
+                {
+                    // Input of chip but output of wire
+                    currentRenderer.setOutputIo(this.gameObject);
+                }
+                
+                else if (input_or_output == true)
+                {
+                    // Output of chip but input of wire
+                    currentRenderer.setInputIo(this.gameObject);
+                }
+                
                 // Adds the Line to memory such that upon subsequent updates, the line's position will update to the ioNode's position
                 LineParent.GetComponent<LineMemory>().addLineToMemory(currentRenderer);
 
                 // Remove this instance of linerenderer from the LineParent so you can create a new line
                 LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(null);
             }
+
+            else
+            {
+                Debug.Log("Attempting to end wire at an identical io type. Wire is either terminating at two inputs or two outputs \nChange your configuration such that the wire ends at an opposite terminal, input to output or output to input");
+            }
         }
 
         else
         {
-            Debug.Log("I/O node already linked to a connecting wire");
+            // Manipulate the wire connected to the input as long as you have no other loose wires
+            if (LineParent.GetComponent<LineMemory>().getCurrentLineRenderer() == null)
+            {
+                LineParent.GetComponent<LineMemory>().setCurrentLineRenderer(currentRenderer);
+                // Free this node as it no longer has a wire attached
+                connected = false;
+                currentRenderer.lr.GetComponent<ConnectingWires>().RewireLine(currentRenderer, this.gameObject);
+
+                if (input_or_output == false)
+                {
+                    // Input of chip but output of wire
+                    currentRenderer.setOutputIo(null); // Free the input
+                }
+
+                else if (input_or_output == true)
+                {
+                    // Output of chip but input of wire
+                    currentRenderer.setInputIo(null);
+                }
+            }
+            
+            else
+            {
+                Debug.Log("You already have a 'free standing' wire currently being edited \nPlace that line first and then you may edit other lines");
+            }
+            
         }
         
     }

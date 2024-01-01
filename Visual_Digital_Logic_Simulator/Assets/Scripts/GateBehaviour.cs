@@ -38,7 +38,7 @@ public class GateBehaviour : MonoBehaviour
     public void CreateIO(Transform chip)
     {
         // Instantiate circle sprites based on the inputs and outputs
-        Debug.Log("Input object created");
+        // Debug.Log("Input object created");
 
         Vector3 coordinateInput = new Vector3(chip.position.x - 0.5f, chip.position.y, -1);
         GameObject input = Instantiate(objectToSpawn, coordinateInput, Quaternion.identity, chip);
